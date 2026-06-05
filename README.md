@@ -3,7 +3,7 @@
 Turn your **phone into a game controller** that drives **any computer**. Drag the
 sticks and hold the buttons on a phone web app; a live dashboard visualizes every
 input; and a Python bridge injects the inputs into your Mac as real keyboard/mouse
-events — with a UI to remap what every control does.
+events  with a UI to remap what every control does.
 
 ```
  phone (client UI)                server (Next.js)                 your Mac
@@ -15,14 +15,6 @@ events — with a UI to remap what every control does.
                                    ▲ /api/mapping  (bridge polls for remaps)
 ```
 
-Three independent pieces:
-
-| Folder | What it is | Port | Stack |
-|--------|-----------|------|-------|
-| **`client/`** | On-phone touch controller (Xbox-style pad) | 3001 | Next.js |
-| **`server/`** | Live monitor dashboard + ingest API + mapping editor | 3000 | Next.js |
-| **`bridge/`** | Translates controller state into real macOS input | — | Python (Quartz) |
-
 ---
 
 ## Quick start
@@ -30,7 +22,7 @@ Three independent pieces:
 You need [Node.js](https://nodejs.org) 18+ and Python 3.10+. The phone and the
 computer must be on the **same WiFi**.
 
-### 1. Start the server (monitor + API) — port 3000
+### 1. Start the server (monitor + API)  port 3000
 
 ```bash
 cd server
@@ -38,7 +30,7 @@ npm install
 npm run dev        # or: npm run build && npm run start  for production
 ```
 
-### 2. Start the client (phone controller) — port 3001
+### 2. Start the client (phone controller)  port 3001
 
 ```bash
 cd client
@@ -57,7 +49,7 @@ Find it with `ipconfig getifaddr en0` (macOS).
 
 No phone handy? Click **Run demo input** on the monitor to fire a scripted sequence.
 
-### 4. Start the bridge (drive your Mac) — see [`bridge/README.md`](bridge/README.md)
+### 4. Start the bridge (drive your Mac)  see [`bridge/README.md`](bridge/README.md)
 
 ```bash
 cd bridge
@@ -66,7 +58,7 @@ python3 -m venv .venv
 ./.venv/bin/python mac_bridge.py --server http://localhost:3000 --verbose
 ```
 
-Then grant **Accessibility** permission (one-time) so the injected events land —
+Then grant **Accessibility** permission (one-time) so the injected events land 
 see the macOS section below.
 
 ---
@@ -84,14 +76,14 @@ see the macOS section below.
 
 Scroll to the **Input Mapping** panel on the monitor (<http://localhost:3000>):
 
-- Every **button / trigger** has a dropdown — pick a key, `Mouse: left/right click`,
+- Every **button / trigger** has a dropdown  pick a key, `Mouse: left/right click`,
   or *none*.
 - Each **stick** can be **Keys** (digital, e.g. WASD), **Mouse**, or **Off**, with
   its own deadzone and (for mouse) sensitivity.
 - **Quick presets**: D-pad → Arrows / WASD, L-stick → WASD / Arrows.
 
 Changes save instantly to disk (`server/data/mapping.json`) and the bridge picks
-them up within ~1 second — no restart.
+them up within ~1 second  no restart.
 
 **Default mapping:** A→Space, B→Shift, X→E, Y→F, LB→Q, RB→R, LS→C, RS→right-click,
 Back→Tab, Start→Esc, Guide→G, D-pad→Arrows, Left stick→WASD, Right stick→Mouse,
@@ -100,7 +92,7 @@ LT→right-click, RT→left-click.
 ### Fullscreen on the phone
 
 - Tap the **⛶** button in the controller's top bar. On Android/desktop Chrome it
-  goes true fullscreen and hides the bar — only the controls remain.
+  goes true fullscreen and hides the bar  only the controls remain.
 - **On iPhone**, Safari can't fullscreen a web page, so the app is a **PWA**: tap
   **Share → Add to Home Screen**, then launch it from the home-screen icon for a
   chromeless, fullscreen, landscape controller.
@@ -113,21 +105,21 @@ The bridge does **not** create a virtual gamepad device. On Apple Silicon + rece
 macOS with SIP enabled, a true HID gamepad needs a signed **DriverKit** system
 extension and a security downgrade (the popular `foohid`-based projects are kernel
 extensions that no longer load). Instead, the bridge translates controller state
-into real **keyboard/mouse** events via Quartz `CGEvent` — no driver, no reboot.
+into real **keyboard/mouse** events via Quartz `CGEvent`  no driver, no reboot.
 
 **You must grant Accessibility permission** for the events to reach other apps:
 
 1. Run the bridge once.
 2. Open **System Settings → Privacy & Security → Accessibility**.
-3. Enable the app that runs the script — usually your **Terminal**, **iTerm**, or
+3. Enable the app that runs the script  usually your **Terminal**, **iTerm**, or
    **VS Code** (whichever app your shell lives in). If unsure which, the bridge's
    events are attributed to the *app that owns the terminal process*.
 4. Restart the bridge.
 
-Quick test: focus a text editor and push the left stick up — `w` should start typing.
+Quick test: focus a text editor and push the left stick up  `w` should start typing.
 
 > Want a real virtual gamepad (for games that only accept actual controllers)?
-> That's the DriverKit path — heavier, requires reduced security. Not included here.
+> That's the DriverKit path  heavier, requires reduced security. Not included here.
 
 ---
 
@@ -149,10 +141,10 @@ Clients also stamp `_seq` (monotonic) and `_t`; the server uses `_seq` to drop
 out-of-order packets and to count missed inputs.
 
 ### Real-time transport
-- `GET /api/stream` — **Server-Sent Events**. Emits a `snapshot` on connect, then
+- `GET /api/stream`  **Server-Sent Events**. Emits a `snapshot` on connect, then
   `update` events. The monitor and the bridge both subscribe here.
-- `GET /api/mapping` / `POST /api/mapping` — read/update the input mapping.
-- `GET /api/input` — current state (debug). `POST /api/ping`, `/api/reset` — utility.
+- `GET /api/mapping` / `POST /api/mapping`  read/update the input mapping.
+- `GET /api/input`  current state (debug). `POST /api/ping`, `/api/reset`  utility.
 
 ### Low-latency design
 - **Client**: up to 4 concurrent fire-and-forget POSTs so input rate isn't tied to
@@ -166,36 +158,6 @@ lives in one Node process; it is not multi-instance safe.
 
 ---
 
-## Commands cheat-sheet
-
-```bash
-# in server/ or client/
-npm install        # once
-npm run dev        # dev server with HMR
-npm run build      # production build + typecheck + lint (the verification gate)
-npm run start      # serve the production build
-npm run lint       # eslint only
-```
-
-**Gotcha:** never run `npm run build` while a `dev`/`start` for the *same* app is
-live — concurrent writes corrupt `.next`. Kill it first
-(`lsof -ti tcp:3000 | xargs kill -9`), and `rm -rf .next` if it's already broken.
-
-```bash
-# bridge/
-./.venv/bin/python mac_bridge.py --server http://<server-ip>:3000 [--verbose]
-```
-
----
-
-## Repo layout
-
-```
-client/   Next.js phone controller (touch UI, sender, settings, fullscreen/PWA)
-server/   Next.js monitor + API (hub, SSE, mapping editor, persistence)
-bridge/   Python → macOS input bridge (Quartz CGEvent, live remapping)
-```
-
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT  see [LICENSE](LICENSE).

@@ -1,4 +1,4 @@
-// Shared controller state model — the canonical shape the phone sends and the
+// Shared controller state model  the canonical shape the phone sends and the
 // server reflects. Sticks are normalized to [-1, 1]; triggers to [0, 1].
 
 export type ButtonName =

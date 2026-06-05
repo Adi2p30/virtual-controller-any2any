@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-mac_bridge.py — turn the virtual controller into real macOS input.
+mac_bridge.py  turn the virtual controller into real macOS input.
 
 Subscribes to the server's SSE stream (/api/stream), reads the live
 ControllerState, and injects keyboard/mouse events via Quartz CGEvent.
-No driver, no SIP changes — only an Accessibility permission grant.
+No driver, no SIP changes  only an Accessibility permission grant.
 
 Usage:
     python3 mac_bridge.py --server http://localhost:3000
@@ -158,7 +158,7 @@ def apply_target(target, want_down):
 
 # --------------------------- dispatch ---------------------------
 # Discrete inputs (buttons, triggers, stick-in-keys-mode) are applied the
-# instant an SSE update arrives — no polling delay. Only continuous stick→mouse
+# instant an SSE update arrives  no polling delay. Only continuous stick→mouse
 # motion needs a steady tick, handled by mouse_loop.
 def apply_discrete(cfg, btn, ls, rs, tr):
     for b, target in cfg["buttons"].items():
@@ -262,10 +262,10 @@ def sse_loop(server, stop):
                         continue  # keep-alive ping
                     if line.startswith("data:"):
                         data_buf.append(line[5:].lstrip())
-                    # event: lines ignored — both snapshot/update carry .state
+                    # event: lines ignored  both snapshot/update carry .state
         except Exception as e:  # noqa: BLE001
             if not stop.is_set():
-                print(f"stream error: {e} — retrying in 1s", flush=True)
+                print(f"stream error: {e}  retrying in 1s", flush=True)
                 time.sleep(1.0)
 
 
@@ -307,7 +307,7 @@ def main():
     sse.start()
     mouser.start()
     mapper.start()
-    print("bridge running — press Ctrl+C to stop", flush=True)
+    print("bridge running  press Ctrl+C to stop", flush=True)
     try:
         while True:
             time.sleep(0.5)

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Virtual Controller — Live Monitor",
+  title: "Virtual Controller  Live Monitor",
   description: "Real-time visualization of the virtual Xbox controller.",
 };
 

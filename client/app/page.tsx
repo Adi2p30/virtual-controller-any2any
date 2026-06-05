@@ -1,15 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ButtonName } from "@/lib/types";
 import { useSender } from "@/lib/sender";
-import { APP_VERSION } from "@/lib/version";
 import {
-  Settings,
-  shapeStick,
-  shapeTrigger,
-  useSettings,
+    Settings,
+    shapeStick,
+    shapeTrigger,
+    useSettings,
 } from "@/lib/settings";
+import { ButtonName } from "@/lib/types";
+import { APP_VERSION } from "@/lib/version";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SettingsPanel } from "./SettingsPanel";
 
 export default function Page() {
@@ -27,7 +27,7 @@ export default function Page() {
     if (fsSupported) {
       toggleFs();
     } else {
-      // iOS Safari has no element fullscreen — point users at Add to Home Screen.
+      // iOS Safari has no element fullscreen  point users at Add to Home Screen.
       setIosHint(true);
     }
   }, [fsSupported, toggleFs]);

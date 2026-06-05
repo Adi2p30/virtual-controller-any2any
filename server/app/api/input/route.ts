@@ -1,9 +1,9 @@
 // Endpoint the phone (or any client) POSTs controller state to. Accepts a full
 // or partial ControllerState; the hub diffs it and broadcasts to browsers.
 
-import { NextRequest, NextResponse } from "next/server";
 import { hub } from "@/lib/hub";
 import { ControllerState } from "@/lib/types";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   void _t;
   const fresh = hub.recordPacket(typeof _seq === "number" ? _seq : undefined);
   if (!fresh) {
-    // stale/out-of-order packet — count it but don't clobber newer state
+    // stale/out-of-order packet  count it but don't clobber newer state
     return NextResponse.json(
       { ok: true, stale: true, state: hub.state },
       { headers: { "Access-Control-Allow-Origin": "*" } },

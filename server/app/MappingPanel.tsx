@@ -4,9 +4,9 @@
 // does on the target machine (e.g. D-pad → arrows vs WASD). Saves to
 // /api/mapping; the bridge picks the change up on its next poll.
 
-import { useCallback, useEffect, useState } from "react";
-import { ButtonName } from "@/lib/types";
 import type { Mapping, StickMapping, StickMode } from "@/lib/mapping";
+import { ButtonName } from "@/lib/types";
+import { useCallback, useEffect, useState } from "react";
 
 const BUTTON_GROUPS: { title: string; items: ButtonName[] }[] = [
   { title: "Face", items: ["A", "B", "X", "Y"] },
@@ -294,7 +294,7 @@ function KeySelect({
 }
 
 function label(o: string) {
-  if (o === "none") return "— none —";
+  if (o === "none") return " none ";
   if (o === "mouse:left") return "Mouse: left click";
   if (o === "mouse:right") return "Mouse: right click";
   return o.length === 1 ? o.toUpperCase() : o;

@@ -1,7 +1,7 @@
 // Tiny client that POSTs partial controller state to the server's /api/input.
 // Changes are coalesced into the next packet, but we allow a few concurrent
 // in-flight POSTs so a button press never has to wait for a stick POST's
-// round-trip — input latency is decoupled from network RTT. Each packet is
+// round-trip  input latency is decoupled from network RTT. Each packet is
 // stamped with a monotonic _seq; the server drops any that arrive out of order,
 // so overlapping sends can't clobber newer state.
 

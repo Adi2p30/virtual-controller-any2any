@@ -39,7 +39,7 @@ class ControllerHub {
   /**
    * Record an inbound packet for the metrics: count, sequence gaps, rate.
    * Returns false if the packet is stale (an older _seq than one already
-   * applied), so the caller can drop it — this lets the client fire packets
+   * applied), so the caller can drop it  this lets the client fire packets
    * concurrently without a late one clobbering newer state.
    */
   recordPacket(seq?: number): boolean {
@@ -103,7 +103,7 @@ class ControllerHub {
 
     const newLogs: LogEntry[] = [];
 
-    // Buttons — log press / release transitions.
+    // Buttons  log press / release transitions.
     for (const b of BUTTON_NAMES) {
       if (next.buttons[b] !== prev.buttons[b]) {
         this.push(
@@ -114,7 +114,7 @@ class ControllerHub {
       }
     }
 
-    // Sticks — log meaningful movement.
+    // Sticks  log meaningful movement.
     const stickMoved = (
       label: string,
       a: { x: number; y: number },

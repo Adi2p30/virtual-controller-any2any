@@ -1,4 +1,4 @@
-# bridge — virtual controller → macOS input
+# bridge  virtual controller → macOS input
 
 Subscribes to the server's SSE stream (`/api/stream`) and injects real
 keyboard/mouse events on macOS via Quartz `CGEvent`. No driver, no SIP change.
@@ -8,7 +8,7 @@ keyboard/mouse events on macOS via Quartz `CGEvent`. No driver, no SIP change.
 > reduced security (Recovery reboot). The `foohid`-based repos (`rii`,
 > `SerialGamepad`) are kexts and won't load. This bridge avoids all that by
 > translating controller state into OS input events instead. Tradeoff: the Mac
-> sees keyboard/mouse, not a "gamepad" — fine for most games/apps.
+> sees keyboard/mouse, not a "gamepad"  fine for most games/apps.
 
 ## Setup
 
@@ -41,11 +41,11 @@ entry off/on, or remove and re-add it.
 
 Edit `mapping.py`:
 
-- `BUTTON_MAP` — each button → a key name (see `keycodes.py`) or
+- `BUTTON_MAP`  each button → a key name (see `keycodes.py`) or
   `"mouse:left"` / `"mouse:right"`.
-- `LEFT_STICK_KEYS` + `LSTICK_DEADZONE` — left stick → WASD-style digital keys.
-- `RSTICK_DEADZONE`, `MOUSE_SENSITIVITY`, `MOUSE_TICK_HZ` — right stick → mouse.
-- `TRIGGER_MAP` + `TRIGGER_THRESHOLD` — LT/RT → key or mouse button.
+- `LEFT_STICK_KEYS` + `LSTICK_DEADZONE`  left stick → WASD-style digital keys.
+- `RSTICK_DEADZONE`, `MOUSE_SENSITIVITY`, `MOUSE_TICK_HZ`  right stick → mouse.
+- `TRIGGER_MAP` + `TRIGGER_THRESHOLD`  LT/RT → key or mouse button.
 
 Add more keys in `keycodes.py` (macOS virtual key codes).
 

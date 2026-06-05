@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 // PWA manifest. "Add to Home Screen" + display:fullscreen makes the controller
-// launch with no browser chrome — the immersive, video-fullscreen-like view the
+// launch with no browser chrome  the immersive, video-fullscreen-like view the
 // controller wants, and the only route to true fullscreen on iOS.
 export default function manifest(): MetadataRoute.Manifest {
   return {

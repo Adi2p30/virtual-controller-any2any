@@ -1,15 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  ButtonName,
-  ControllerState,
-  LogEntry,
-  Metrics,
-  emptyMetrics,
-  emptyState,
+    ButtonName,
+    ControllerState,
+    LogEntry,
+    Metrics,
+    emptyMetrics,
+    emptyState,
 } from "@/lib/types";
 import { APP_VERSION } from "@/lib/version";
+import { useCallback, useEffect, useRef, useState } from "react";
 import MappingPanel from "./MappingPanel";
 
 const FACE = new Set<ButtonName>(["A", "B", "X", "Y"]);
@@ -122,7 +122,7 @@ export default function Page() {
       <div className="metrics">
         <Metric
           label="Ping"
-          value={latency === null ? "—" : `${latency} ms`}
+          value={latency === null ? "" : `${latency} ms`}
           tone={latency === null ? "bad" : latency < 60 ? "good" : latency < 150 ? "warn" : "bad"}
         />
         <Metric
