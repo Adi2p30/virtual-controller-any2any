@@ -1,4 +1,4 @@
-# virtual-controller-any-any
+# virtual-controller-any2any
 
 Turn your **phone into a game controller** that drives **any computer**. Drag the
 sticks and hold the buttons on a phone web app; a live dashboard visualizes every
