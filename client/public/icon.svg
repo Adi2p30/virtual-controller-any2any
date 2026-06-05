@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#0a0c10"/>
+  <g fill="none" stroke="#3ddc97" stroke-width="20" stroke-linecap="round">
+    <!-- left stick -->
+    <circle cx="180" cy="256" r="46"/>
+    <!-- d-pad -->
+    <path d="M150 350 h60 M180 320 v60"/>
+    <!-- face buttons -->
+    <circle cx="332" cy="210" r="20" fill="#3ddc97" stroke="none"/>
+    <circle cx="380" cy="256" r="20" fill="#3ddc97" stroke="none"/>
+    <circle cx="332" cy="302" r="20" fill="#3ddc97" stroke="none"/>
+    <circle cx="284" cy="256" r="20" fill="#3ddc97" stroke="none"/>
+  </g>
+  <rect x="96" y="150" width="320" height="212" rx="106" fill="none" stroke="#232a36" stroke-width="16"/>
+</svg>
