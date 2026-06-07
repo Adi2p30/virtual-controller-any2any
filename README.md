@@ -49,6 +49,26 @@ Find it with `ipconfig getifaddr en0` (macOS).
 
 No phone handy? Click **Run demo input** on the monitor to fire a scripted sequence.
 
+### Optional: Direct (WebRTC) mode  iPhone↔Mac / Mac↔Mac
+
+By default the controller POSTs JSON to the server. **Direct mode** instead opens
+a peer-to-peer **WebRTC** data channel and sends a compact **12-byte binary frame**
+per update straight to the target machine  the server only brokers the handshake,
+input data never round-trips through it. Works iPhone Safari → Mac and Mac → Mac.
+
+> Note: this is WebRTC over your Wi-Fi, **not** AirDrop/AWDL. A browser can't open
+> the AirDrop-style direct Wi-Fi link  that needs a native app. Both devices still
+> need to be on the same network and reach the server once, for signaling.
+
+To use it:
+
+1. On the **target Mac**, open <http://localhost:3000/receive>, type a room code
+   (e.g. `living-room`), and click **Connect**. Keep this tab open  it feeds the
+   bridge via the local `/api/input`, so run the bridge as usual.
+2. On the **controller**, open **⚙ Settings → Connection**, enable
+   **Direct (WebRTC, binary)**, and enter the **same room code**.
+3. Drive it  frames now flow peer-to-peer as 12-byte packets.
+
 ### 4. Start the bridge (drive your Mac)  see [`bridge/README.md`](bridge/README.md)
 
 ```bash
@@ -126,29 +146,52 @@ Quick test: focus a text editor and push the left stick up  `w` should start typ
 ## Architecture notes
 
 ### Wire format (`POST /api/input`)
-Partial or full JSON; the hub shallow-merges, so clients send only what changed.
-Sticks `[-1, 1]`, triggers `[0, 1]`.
+The phone client sends a compact **12-byte binary frame** (`Content-Type:
+application/octet-stream`)  the same format used by Direct/WebRTC mode (see the
+table above), carrying full state + `seq`. This is the default for **both** the
+normal HTTP transport and Direct mode.
+
+For convenience the endpoint **also** accepts JSON (used by the monitor's demo
+input, the `/receive` relay, and `curl`); partial or full, the hub shallow-merges:
 
 ```jsonc
 {
   "leftStick":  { "x": 0.5, "y": -0.5 },
   "triggers":   { "RT": 0.8 },
-  "buttons":    { "A": true }
+  "buttons":    { "A": true },
+  "_seq":       42            // monotonic; server drops out-of-order packets
 }
 ```
 
-Clients also stamp `_seq` (monotonic) and `_t`; the server uses `_seq` to drop
-out-of-order packets and to count missed inputs.
+The server resyncs its `seq` tracking after an idle gap, so a reconnecting client
+(whose counter restarts low) isn't rejected as stale.
+
+### Direct (WebRTC) wire format
+In Direct mode the phone↔Mac data channel carries a fixed **12-byte little-endian
+binary frame** instead of JSON (`server/lib/wire.ts`, mirrored in `client/lib`):
+
+| bytes | type   | field                                      |
+|-------|--------|--------------------------------------------|
+| 0..3  | uint32 | `seq` (monotonic, drops stale frames)      |
+| 4..5  | uint16 | button bitmask (15 buttons, fixed order)   |
+| 6..9  | int8×4 | L.x, L.y, R.x, R.y (value × 127)           |
+| 10,11 | uint8  | LT, RT (value × 255)                       |
+
+That's ~12 bytes vs ~150 of JSON. The channel is unreliable + unordered
+(latest-wins); the receiver decodes back to a `ControllerState` and forwards it to
+its local `/api/input`, so the bridge is unchanged.
 
 ### Real-time transport
 - `GET /api/stream`  **Server-Sent Events**. Emits a `snapshot` on connect, then
   `update` events. The monitor and the bridge both subscribe here.
+- `GET /api/signal?room=&role=`  WebRTC signaling relay (SSE + POST) for Direct
+  mode. Brokers SDP/ICE between the two peers in a room; carries no input data.
 - `GET /api/mapping` / `POST /api/mapping`  read/update the input mapping.
 - `GET /api/input`  current state (debug). `POST /api/ping`, `/api/reset`  utility.
 
 ### Low-latency design
-- **Client**: up to 4 concurrent fire-and-forget POSTs so input rate isn't tied to
-  WiFi round-trip; the server drops any stale `_seq`.
+- **Client**: 12-byte binary frames; up to 4 concurrent fire-and-forget POSTs so
+  input rate isn't tied to WiFi round-trip; the server drops any stale `_seq`.
 - **Bridge**: discrete inputs fire the instant an SSE update arrives (no polling
   delay); a dedicated 250 Hz loop handles continuous stick→mouse motion.
 

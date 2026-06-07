@@ -16,6 +16,7 @@ import {
 const DEAD_ZONE = 0.08; // ignore tiny stick jitter when logging
 const TRIGGER_STEP = 0.1; // only log trigger changes bigger than this
 const MAX_LOG = 200;
+const SESSION_IDLE_MS = 1500; // silence longer than this = a new client session
 
 export interface HubEvent {
   state: ControllerState;
@@ -44,14 +45,20 @@ class ControllerHub {
    */
   recordPacket(seq?: number): boolean {
     const now = Date.now();
+    // A new client/session always starts after a pause, and its _seq counter
+    // restarts low. Genuine reordering only happens within milliseconds, so an
+    // idle gap means "new session": resync to whatever seq arrives instead of
+    // rejecting every low packet against a stale lastSeq forever.
+    const prevTs = this.metrics.lastInputAt;
+    const newSession = prevTs === 0 || now - prevTs > SESSION_IDLE_MS;
     this.metrics.received++;
     this.metrics.lastInputAt = now;
     let stale = false;
     if (typeof seq === "number") {
-      if (this.lastSeq !== null && seq <= this.lastSeq) {
-        stale = true; // out-of-order/duplicate: drop it
+      if (!newSession && this.lastSeq !== null && seq <= this.lastSeq) {
+        stale = true; // out-of-order/duplicate within an active stream: drop it
       } else {
-        if (this.lastSeq !== null && seq > this.lastSeq + 1) {
+        if (!newSession && this.lastSeq !== null && seq > this.lastSeq + 1) {
           this.metrics.missed += seq - this.lastSeq - 1;
         }
         this.lastSeq = seq;
@@ -164,6 +171,7 @@ class ControllerHub {
 
   reset() {
     this.state = emptyState();
+    this.lastSeq = null; // next packet (any seq) starts a fresh stream
     return this.system("Controller state reset");
   }
 

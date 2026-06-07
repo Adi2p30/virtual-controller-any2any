@@ -1,1 +1,4 @@
-pyobjc-framework-Quartz>=10.0
+# macOS only: Quartz CGEvent injection. The Windows backend uses ctypes
+# SendInput from the stdlib and needs nothing here. The marker keeps a Windows
+# `pip install -r requirements.txt` from trying to build pyobjc.
+pyobjc-framework-Quartz>=10.0; sys_platform == "darwin"

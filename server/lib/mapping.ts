@@ -7,47 +7,10 @@
 
 import { promises as fs } from "fs";
 import path from "path";
-import { BUTTON_NAMES, ButtonName } from "./types";
-
-export type StickMode = "keys" | "mouse" | "none";
-
-export interface StickMapping {
-  mode: StickMode;
-  // used when mode === "keys": each direction fires a target past the deadzone
-  keys: { up: string; down: string; left: string; right: string };
-  deadzone: number; // 0..1
-  sensitivity: number; // px per tick at full deflection (mouse mode)
-}
-
-export interface Mapping {
-  buttons: Record<ButtonName, string>; // button -> target
-  leftStick: StickMapping;
-  rightStick: StickMapping;
-  triggers: { LT: string; RT: string }; // trigger -> target
-  triggerThreshold: number; // 0..1, fire target past this
-}
-
-// Selectable targets for the dropdowns in the UI. Keep in sync with the
-// bridge's keycodes.py (anything here that isn't a key/mouse/none is ignored).
-export const KEY_OPTIONS: string[] = [
-  "none",
-  "mouse:left",
-  "mouse:right",
-  "space",
-  "shift",
-  "control",
-  "option",
-  "command",
-  "tab",
-  "return",
-  "escape",
-  "up",
-  "down",
-  "left",
-  "right",
-  ..."abcdefghijklmnopqrstuvwxyz".split(""),
-  ..."0123456789".split(""),
-];
+import { BUTTON_NAMES } from "./types";
+export type { StickMode, StickMapping, Mapping } from "./mapping-types";
+export { KEY_OPTIONS } from "./mapping-types";
+import type { Mapping, StickMapping } from "./mapping-types";
 
 export function defaultMapping(): Mapping {
   return {
