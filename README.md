@@ -2,15 +2,15 @@
 
 Turn your **phone into a game controller** that drives **any computer**. Drag the
 sticks and hold the buttons on a phone web app; a live dashboard visualizes every
-input; and a Python bridge injects the inputs into your Mac as real keyboard/mouse
-events  with a UI to remap what every control does.
+input; and a Python bridge injects the inputs into your **Mac or Windows PC** as
+real keyboard/mouse events  with a UI to remap what every control does.
 
 ```
- phone (client UI)                server (Next.js)                 your Mac
+ phone (client UI)                server (Next.js)               your computer
 ┌────────────────┐  POST        ┌──────────────────┐  SSE       ┌──────────────┐
 │  touch gamepad │ ───────────▶ │  hub (live state)│ ─────────▶ │   bridge     │
-│  sticks/buttons│ /api/input   │  + monitor UI    │ /api/stream│  CGEvent →   │
-│  fullscreen    │              │  + mapping editor│            │  keys/mouse  │
+│  sticks/buttons│ /api/input   │  + monitor UI    │ /api/stream│  CGEvent /   │
+│  fullscreen    │              │  + mapping editor│            │  SendInput   │
 └────────────────┘              └──────────────────┘            └──────────────┘
                                    ▲ /api/mapping  (bridge polls for remaps)
 ```
@@ -20,7 +20,11 @@ events  with a UI to remap what every control does.
 ## Quick start
 
 You need [Node.js](https://nodejs.org) 18+ and Python 3.10+. The phone and the
-computer must be on the **same WiFi**.
+computer must be on the **same WiFi**. Works on **macOS and Windows**.
+
+**One command:** `./start-all.sh` (macOS) or `start-all.bat` (Windows) launches
+the server, client, and bridge together and prints the URLs. The steps below do
+the same thing manually.
 
 ### 1. Start the server (monitor + API)  port 3000
 
@@ -39,7 +43,7 @@ npm run dev
 ```
 
 Both bind `0.0.0.0`, so your phone can reach them by your computer's LAN IP.
-Find it with `ipconfig getifaddr en0` (macOS).
+Find it with `ipconfig getifaddr en0` (macOS) or `ipconfig` → IPv4 Address (Windows).
 
 ### 3. Open the apps
 
@@ -69,8 +73,9 @@ To use it:
    **Direct (WebRTC, binary)**, and enter the **same room code**.
 3. Drive it  frames now flow peer-to-peer as 12-byte packets.
 
-### 4. Start the bridge (drive your Mac)  see [`bridge/README.md`](bridge/README.md)
+### 4. Start the bridge (drive your computer)  see [`bridge/README.md`](bridge/README.md)
 
+**macOS**
 ```bash
 cd bridge
 python3 -m venv .venv
@@ -81,6 +86,16 @@ python3 -m venv .venv
 Then grant **Accessibility** permission (one-time) so the injected events land 
 see the macOS section below.
 
+**Windows**
+```bat
+cd bridge
+start.bat --server http://localhost:3000 --verbose
+```
+
+No permission grant or extra packages needed  injection uses Win32 `SendInput`
+via `ctypes` from the stdlib. Keys go out as scancodes so DirectInput games see
+them; some kernel-level anti-cheat titles block injected input by design.
+
 ---
 
 ## Using it
@@ -88,7 +103,7 @@ see the macOS section below.
 1. With all three running, open the controller on your phone and the monitor on
    your computer.
 2. Press a button / drag a stick on the phone → the monitor lights up → the bridge
-   types into whatever app is focused on your Mac.
+   types into whatever app is focused on your computer.
 3. **Remap controls** live in the monitor's **Input Mapping** panel (see below).
 4. **Go fullscreen** on the phone with the ⛶ button so only the controls show.
 
